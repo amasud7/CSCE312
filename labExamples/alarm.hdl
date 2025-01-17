@@ -1,0 +1,10 @@
+CHIP alarm {
+    IN K, S, B;
+    OUT A;
+
+    PARTS:
+    And(a=K, b=S, out=KANDS);
+    Not(in=B, out=NOTB);
+    And(a=KANDS, b=NOTB, out=A);
+}
+
