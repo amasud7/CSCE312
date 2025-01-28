@@ -1,0 +1,17 @@
+// if sel == 00, out = a
+// if sel == 01, out = b
+// if sel == 10, out = c
+// if sel == 11, out = d
+
+CHIP Mux4Way {
+    IN a, b, c, d, sel[2];
+    OUT out;
+
+    PARTS:
+    // Implementing the 4-way multiplexer using 3 2-way multiplexers
+    Mux(a=a, b=b, sel=sel[0], out=ab); // selects a or b
+    Mux(a=c, b=d, sel=sel[0], out=cd); // selects c or d
+    Mux(a=ab, b=cd, sel=sel[1], out=out); // the second selector
+}
+
+
