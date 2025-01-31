@@ -1,4 +1,5 @@
 //NAME AND UIN
+// Ayad Masud 733009045
 
 /**
  * 8-way demultiplexor:
@@ -18,4 +19,7 @@ CHIP DMux8Way {
 
     PARTS:
     // Put your code here:
+    DMux(in=in, sel=sel[2], a=top, b=bottom);
+    DMux4Way(in=top, sel=sel[0..1], a=a, b=b, c=c, d=d);
+    DMux4Way(in=bottom, sel=sel[0..1], a=e, b=f, c=g, d=h);
 }

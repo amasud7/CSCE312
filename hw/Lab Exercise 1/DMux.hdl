@@ -1,4 +1,5 @@
 //NAME AND UIN
+// Ayad Masud 733009045
 
 /**
  * Demultiplexor:
@@ -12,4 +13,7 @@ CHIP DMux {
 
     PARTS:
     // Put your code here:
+    Not(in=sel, out=notSel);
+    And(a=notSel, b=in, out=a);
+    And(a=sel, b=in, out=b);
 }
