@@ -1,0 +1,42 @@
+CHIP rockPaperScissors {
+    IN A[2], B[2];
+    OUT out[2];
+
+    PARTS:
+    // left side
+    Not(in=A[0], out=notA0);
+    Not(in=B[1], out=notB1);
+    And(a=notA0, b=notB1, out=A0B1);
+    Xor(a=A[1], b=B[0], out=AXORB);
+    And(a=A0B1, b=AXORB, out=x);
+
+    // right side
+    Not(in=A[1], out=notA1);
+    And(a=notA1, b=A[0], out=A1A0);
+    Not(in=B[0], out=notB0);
+    And(a=B[1], b=notB0, out=B1B0);
+    And(a=A1A0, b=B1B0, out=y);
+
+    // final or gate
+    Or(a=x, b=y, out=out[0]);
+
+
+// second equation
+    // left side
+    Not(in=A[1], out=notA01);
+    Not(in=B[0], out=notB11);
+    And(a=notA01, b=notB11, out=A0B11);
+    Xor(a=A[0], b=B[1], out=AXORB1);
+    And(a=A0B11, b=AXORB1, out=x1);
+
+    // right side
+    Not(in=A[0], out=notA11);
+    And(a=notA11, b=A[1], out=A1A01);
+    Not(in=B[1], out=notB01);
+    And(a=B[0], b=notB01, out=B1B01);
+    And(a=A1A01, b=B1B01, out=y1);
+
+    // final or gate
+    Or(a=x1, b=y1, out=out[1]);
+
+}
