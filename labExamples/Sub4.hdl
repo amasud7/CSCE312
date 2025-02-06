@@ -1,0 +1,31 @@
+/**
+ * Implements subtraction on two 4-bit numbers declared in 2s complement format.
+ */
+
+/**
+ * Description: The inputs implements subtraction on two 4-bit numbers declared in 2s complement format. It is assumed
+ * that we implement a-b and generate carryout as overflow.
+ */
+
+
+CHIP Sub4 {
+    IN a[4], b[4];
+    OUT out[4],overflow;
+
+    PARTS:
+    // step 1: To perform a-b let's transform first to a+(-b). Create representation for -b
+    //Invert b and then add 1 to the LSB
+
+	Not4(in=b,out=notb);
+	RCA4(a=notb, b[0]=true, b[1..3]=false, sum[0]=nb0, sum[1]=nb1, sum[2]=nb2, sum[3]=nb3, cout=cout);	
+    
+    // step 2: add a and signed b
+	HalfAdder(a=a[0], b=nb0, sum=out[0], carry=c01);
+	FullAdder(a=a[1], b=nb1, c=c01, sum=out[1], carry=c12);
+   	FullAdder(a=a[2], b=nb2, c=c12, sum=out[2], carry=c23);
+	FullAdder(a=a[3], b=nb3, c=c23, sum=out[3], carry=c3out);	
+    
+    // step 3: detect overflow
+	Xor(a=c3out, b=c23, out=overflow);
+
+}
