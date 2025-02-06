@@ -1,0 +1,21 @@
+//Name: Ayad Masud
+//UIN: 73309045
+
+/**
+ * Adds two 6-bit values
+ * The chip performs out=a+b
+ * Both inputs a and b are UNSIGNED 
+ * The carry output reflects the overflow of the Add6 chip
+ */
+
+
+CHIP Add6 {
+    IN a[6], b[6];
+    OUT out[6],carry;
+
+    PARTS:
+    // Put your code here:
+    Add4(a=a[0..3], b=b[0..3], c=false, out=out[0..3], carry=c1);
+    FullAdder(a=a[4], b=b[4], c=c1, sum=out[4], carry=c2);
+    FullAdder(a=a[5], b=b[5], c=c2, sum=out[5], carry=carry);
+}

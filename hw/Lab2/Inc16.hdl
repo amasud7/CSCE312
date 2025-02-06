@@ -1,0 +1,21 @@
+//Name: Ayad Masud
+//UIN: 733009045
+
+/**
+ * 16-bit incrementer:
+ * out = in + 1 (arithmetic addition)
+ * in is UNSIGNED
+ * carry output is intentionally ignored
+ */
+
+CHIP Inc16 {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+    Add16(a=in, b[0]=true, b[1..15]=false, out=out);
+    // a = takes in the 16 bit number
+    // b = takes in 16 bit, where the least significant bit is 1 --> 0000 0000 0000 0001 --> this equivalent to 1 and therefore ur
+    // adding 1 to the 16 bit number in a and sending it to out
+}
