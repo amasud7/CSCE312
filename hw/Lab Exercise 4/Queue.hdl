@@ -1,0 +1,11 @@
+// NAME UIN
+// Ayad Masud
+// 733009045
+
+CHIP Queue {
+    IN REQ, CMPL;
+    OUT QREQ, STALL;
+
+    PARTS:
+    
+}
