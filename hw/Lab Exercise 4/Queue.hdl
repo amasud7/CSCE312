@@ -7,5 +7,62 @@ CHIP Queue {
     OUT QREQ, STALL;
 
     PARTS:
+    // start with DFF
+    DFF(in=D0, out=Q0);
+    DFF(in=D1, out=Q1);
+    DFF(in=D2, out=Q2);
+
+    // next state logic for D0
+    And(a=Q0, b=REQ, out=Q0andREQ);
+
+    Not(in=Q2, out=notQ2);
+    And(a=REQ, b=notQ2, out=REQandnotQ2);
+
+    And(a=Q1, b=CMPL, out=Q1andCMPL);
+    And(a=Q1andCMPL, b=REQ, out=Q1andCMPLandREQ);
+
+    And(a=Q0, b=Q1, out=Q0andQ1);
+    And(a=Q2, b=CMPL, out=Q2andCMPL);
+    And(a=Q0andQ1, b=Q2andCMPL, out=Q0andQ1andQ2andCMPL);
+
+    Or(a=Q0andREQ, b=REQandnotQ2, out=Q0andREQorREQandnotQ2);
+    Or(a=Q1andCMPLandREQ, b=Q0andQ1andQ2andCMPL, out=Q1andCMPLandREQorQ0andQ1andQ2andCMPL);
+    Or(a=Q0andREQorREQandnotQ2, b=Q1andCMPLandREQorQ0andQ1andQ2andCMPL, out=D0);
     
+
+    // next state logic for D1
+    And(a=Q1, b=Q2, out=Q1andQ2);
+    Not(in=REQ, out=notREQ);
+    Not(in=CMPL, out=notCMPL);
+    And(a=notREQ, b=notCMPL, out=notREQandnotCMPL);
+    And(a=Q1andQ2, b=notREQandnotCMPL, out=Q1andQ2andnotREQandnotCMPL);
+
+    Or(a=Q0, b=Q1andQ2andnotREQandnotCMPL, out=D1);
+
+
+    // next state logic for D2
+    And(a=Q1, b=CMPL, out=Q1andCMPL1);
+
+    Not(in=Q2, out=notQ21);
+    And(a=Q1, b=notQ21, out=Q1andnotQ21);
+
+    Not(in=REQ, out=notREQ1);
+    And(a=Q1, b=notREQ1, out=Q1andnotREQ1);
+
+    And(a=Q0, b=Q2, out=Q0andQ2);
+    Not(in=CMPL, out=notCMPL1);
+    And(a=Q0andQ2, b=notCMPL1, out=Q0andQ2andnotCMPL1);
+
+    Or(a=Q1andCMPL1, b=Q1andnotQ21, out=Q1andCMPL1orQ1andnotQ21);
+    Or(a=Q1andnotREQ1, b=Q0andQ2andnotCMPL1, out=Q1andnotREQ1orQ0andQ2andnotCMPL1);
+    Or(a=Q1andCMPL1orQ1andnotQ21, b=Q1andnotREQ1orQ0andQ2andnotCMPL1, out=D2);
+
+
+    // Output logic
+    And(a=Q0, b=Q1, out=Q0andQ11);
+    Not(in=CMPL, out=notCMPL2);
+    And(a=Q2, b=notCMPL2, out=Q2andnotCMPL2);
+    And(a=Q0andQ11, b=Q2andnotCMPL2, out=STALL);
+
+    Or(a=Q2, b=false, out=QREQ);
 }
