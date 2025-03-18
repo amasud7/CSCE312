@@ -1,0 +1,11 @@
+CHIP ComputerTest {
+    IN  reset;
+
+    Parts:
+    // Parts Here
+    ROM32K(address=pc, out=instruction); // holds the instructions
+
+    CPUTest(inM=CPUin, instruction=instruction, reset=reset, outM=outM, writeM=writeM, addressM=addressM, pc=pc);
+
+    MemoryTest(in=outM, load=writeM, address=addressM, out=CPUin);
+}

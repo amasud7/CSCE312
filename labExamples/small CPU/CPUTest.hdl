@@ -1,0 +1,13 @@
+CHIP CPUTest {
+    In inM[16], // input data
+        instruction[16],
+        reset;
+    
+    OUT writeM, 
+        outM[16], // output data
+        addressM[15], // address to write/load data
+        pc[15]; // program counter  (where instruction is stored in ROM)
+
+        PARTS:
+        // todo
+}
