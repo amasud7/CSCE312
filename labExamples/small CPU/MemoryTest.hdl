@@ -1,7 +1,7 @@
 CHIP MemoryTest {
     IN load,
         in[16],
-        address[15];
+        address[16];
 
     OUT out[16];
 

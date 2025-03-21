@@ -1,13 +1,118 @@
 CHIP CPUTest {
-    In inM[16], // input data
+
+
+
+
+    // SOMETHING IS WRONG IN THIS CODE --> LOOK at given code for correct answer
+
+    
+    IN inM[16], // input data
         instruction[16],
         reset;
     
     OUT writeM, 
         outM[16], // output data
-        addressM[15], // address to write/load data
-        pc[15]; // program counter  (where instruction is stored in ROM)
+        addressM[16], // address to write/load data
+        pc[16]; // program counter  (where instruction is stored in ROM)
 
         PARTS:
-        // todo
+        // CORE Parts 
+        Register(in=regInput, load=selR0, out=R0);
+        Register(in=regInput, load=selR1, out=R1);
+        Register(in=regInput, load=selR2, out=R2);
+        ALU(x=aluX, y=aluY, AluOut=AluOut, overflow=overflow);
+        PC(in=writeAddr, load=pcLoad, inc=true, reset=reset, out=pc);
+
+        // Instruction Negations
+        Not(in=instruction[15], out=notInstruction15);
+        Not(in=instruction[14], out=notInstruction14);
+        Not(in=instruction[13], out=notInstruction13);
+        Not(in=instruction[8], out=notInstruction8);
+        Not(in=instruction[6], out=notInstruction6);
+        Not(in=instruction[5], out=notInstruction5);
+        Not(in=instruction[3], out=notInstruction3);
+
+
+        // Instruction Decode
+
+        // ADD instructions
+        // aluop = notInstruction15 * notInstruction14
+        And(a=notInstruction15, b=notInstruction14, out=aluop);
+        // instruction = 0b000 ... --> ADD
+        And(a=aluop, b=notInstruction13, out=aluAdd);
+
+        // instruction = 0b001 .. --> ADDI
+        And(a=aluop, b=instruction[13], out=aluADDI);
+
+
+        // Memory Instructions
+        // memp = notInstruction15 * notInstruction13
+        And(a=instruction[15], b=notInstruction13, out=memop);
+        // instruction = 0b100 ... --> READ
+        And(a=memop, b=notInstruction14, out=memREAD);
+        // instruction = 0b101 ... --> WRITE
+        And(a=memop, b=instruction[14], out=memWRITE);
+
+
+        // Branch/Jump Operations
+        // brop = instruction[15] * instruction[14] * instruction[13]
+        And(a=instruction[15], b=instruction[14], out=bropa);
+        And(a=bropa, b=instruction[13], out=brop);
+        // instruction = 0b111 --> BEQ
+        And(a=brop, b=true, out=brEQ);
+
+
+        // Write to registers.
+        Mux16(a=inM, b=AluOut, sel=notInstruction15, out=regInput); // 0 selects a, 1 selects b
+        // regIsDest = aluop + memREAD
+        Or(a=aluop, b=memREAD, out=regIsDest);
+
+        // DEST register
+        And(a=regIsDest, b=instruction[11], out=selR0);
+        And(a=regIsDest, b=instruction[12], out=selR1);
+        And(a=regIsDest, b=instruction[13], out=selR2);
+
+
+        // ALU Logic
+        // aluADD: 
+        // SRC1 Register: 
+        // 0b100 = R0
+        // 0b010 = R1
+        // 0b001 = R2
+        Mux16(a=R0, b=R1, sel=notInstruction8, out=aluXb);
+        Mux16(a=R2, b=aluXb, sel=notInstruction6, out=aluX);
+
+        // SRC2 Register:
+        // 0b100 = R0
+        // 0b010 = R1
+        // 0b001 = R2
+        Mux16(a=R0, b=R1, sel=notInstruction5, out=aluRegYb);
+        Mux16(a=R2, b=aluRegYb, sel=notInstruction3, out=aluRegY);
+        //aluADDI --> 6 bit immediate value
+        Mux16(a=aluRegY, b[0..5]=instruction[0..5], sel=aluADDI, out=aluY);
+
+
+        // Memory Logic
+        // memREAD
+        Mux16(a=R0, b=R1, sel=notInstruction8, out=readAddrb);
+        Mux16(a=R2, b=readAddrb, sel=notInstruction6, out=readAddr);
+        // memWRITE
+        Mux16(a=R0, b=R1, sel=notInstruction5, out=writeAddrb);
+        Mux16(a=R2, b=writeAddrb, sel=notInstruction3, out=writeAddr);
+
+        // addressM
+        Mux16(a=readAddr, b=writeAddr, sel=memWRITE, out=addressM);
+        
+
+        // Branch logic
+        // brEQ
+        // SRC Register = aluX
+        // TARGET ADDRESS = writeAddr
+
+        Mux16(a=aluX, b=true, sel=false, out[0..7]=firstHalf, out[8..15]=secondHalf);
+        Or8Way(in=firstHalf, out=notFirstHalfAllZero);
+        Or8Way(in=secondHalf, out=notSecondHalfAllZero);
+        Or(a=notFirstHalfAllZero, b=notSecondHalfAllZero, out=notAllZero);
+        Not(in=notAllZero, out=allZero);
+        And(a=brEQ, b=allZero, out=pcLoad);
 }
