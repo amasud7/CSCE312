@@ -1,3 +1,4 @@
+// Ayad Masud 733009045
 CHIP CPU
 {
     IN inM[16], instruction[16], reset;

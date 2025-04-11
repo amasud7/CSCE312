@@ -1,6 +1,8 @@
 // Code Authored by Amit Merchant CSCE-312
 // The Custom ALU is provided as IP to be used in construction of the Small CPU
 
+// Ayad Masud 733009045
+
 CHIP ALU {
     IN x[16], y[16], Opcode[4];
     OUT AluOut[16], overflow;	

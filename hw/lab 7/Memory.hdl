@@ -1,3 +1,4 @@
+// Ayad Masud 733009045
 CHIP Memory
 {
     IN load, in[16], address[16];
