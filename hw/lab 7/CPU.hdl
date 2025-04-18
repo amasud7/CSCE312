@@ -15,10 +15,19 @@ CHIP CPU
     // the Program Counter (PC) maintain the CPU state, and the Arithmetic
     // Logic Unit (ALU) performs the computations.
 
-    Register(in=regInput, load=selR0, out=R0, out=outR0);
-    Register(in=regInput, load=selR1, out=R1, out=outR1);
-    Register(in=regInput, load=selR2, out=R2, out=outR2);
-    ALU(x=aluX, y=aluY, Opcode=instruction[12..15], AluOut=aluOut, overflow=overflow);
+    Register(in=regInput0, load=selR0, out=R0, out=outR0);
+    Register(in=regInput1, load=selR1, out=R1, out=outR1);
+    Register(in=regInput2, load=selR2, out=R2, out=outR2);
+    
+    // First ALU
+    ALU(x=aluX, y=aluY, Opcode=instruction[12..15], AluOut=aluOut, overflow=overflow1);
+    
+    // Second ALU
+    ALU(x=aluXSimD, y=aluY, Opcode=instruction[12..15], AluOut=aluOut2, overflow=overflow2);
+    
+    // // Select between the two ALUs based on operation type
+    // Mux16(a=aluOut1, b=aluOut2, sel=aluSimD, out=aluOut);
+    
     PC(in=brTargetAddr, load=pcLoad, inc=true, reset=reset, out=pc);
 
 // Instruction Decode
@@ -60,6 +69,14 @@ CHIP CPU
     // alumath
     And(a=aluop, b=notInstruction14, out=alumath);
 
+    // aluSimD
+    // aluSimD = aluop * alumath * instruction[13] * instruction[12];
+    And(a=aluop, b=alumath, out=alusim1);
+    And(a=instruction[13], b=instruction[12], out=alusim2);
+    And(a=alusim1, b=alusim2, out=aluSimD);
+
+
+
     // // aluddd = aluop * alumath * notInstruction13 * notInstruction12
     And(a=aluop, b=alumath, out=addone);
     And(a=notInstruction13, b=notInstruction12, out=addtwo);
@@ -68,7 +85,9 @@ CHIP CPU
     // aluaddi = aluop * alumath * instruction[13] * notInstruction12
     And(a=aluop, b=alumath, out=addione);
     And(a=instruction[13], b=notInstruction12, out=additwo);
-    And(a=addione, b=additwo, out=aluADDI);
+    And(a=addione, b=additwo, out=aluADDI2);
+    And(a=aluADDI2, b=notInstruction12, out=aluADDI);
+
 
     // alusub = aluop * alumath * notInstruction13 * instruction[12]
     And(a=aluop, b=alumath, out=subone);
@@ -116,11 +135,6 @@ CHIP CPU
     And(a=aluop, b=alulogic, out=shiftrightone);
     And(a=instruction[13], b=instruction[12], out=shiftrighttwo);
     And(a=shiftrightone, b=shiftrighttwo, out=alushiftright);
-
-
-
-    
-
 
 
 
@@ -178,15 +192,18 @@ CHIP CPU
     Mux16(a=R0, b=R1, sel=notInstruction8, out=fromI8);
     Mux16(a=R2, b=fromI8, sel=notInstruction6, out=aluX, out=memREADAddr, out=outM, out=brSrcReg);
     
+    Mux16(a=R1, b=R0, sel=notInstruction8, out=aluXSimD);
+    
     // instruction[3..5] =
             // 0b100 ==> R0
             // 0b010 ==> R1
             // 0b001 ==> R2
     // aluop:
         // ADD: "SRC2 REGISTER" == aluYReg
-    Mux16(a=R0, b=R1, sel=notInstruction5, out=fromI5);
-    Mux16(a=R2, b=fromI5, sel=notInstruction3, out=aluYReg);
+    Mux16(a=R0, b=R1, sel=notInstruction5, out=fromI5); // mux R0 and R1
+    Mux16(a=R2, b=fromI5, sel=notInstruction3, out=aluYReg); // mux R2 and fromI5
 
+    
 // Register Write
     // Most of the instructions of this CPU write their result directly into a
     // register. We handle writing values into the registers here.
@@ -195,12 +212,21 @@ CHIP CPU
     // CPU, Arithmetic Operations (aluop) and Memory READ (memREAD) are the
     // only instructions which write to a register, so if the aluOP or memREAD
     // flags are true, then we will write to a register.
-    Or(a=aluop, b=memREAD, out=regIsDest);
+
+    // Or(a=aluop, b=memREAD, out=regIsDest);
+    Or(a=notInstruction15, b=memREAD, out=regIsDest);
+
     // We then select which data needs to be written into the register. For
     // this CPU we have two options: the output from Memory (inM) when the
     // instruction is memREAD or the output from ALU (aluOut) when the
     // instruction is an aluop.
-    Mux16(a=inM, b=aluOut, sel=aluop, out=regInput);
+
+    // Mux16(a=inM, b=aluOut, sel=aluop, out=regInput);
+    Mux16(a=inM, b=aluOut, sel=aluop, out=regInput0);
+    Mux16(a=regInput0, b=aluOut2, sel=selR1simd, out=regInput1);
+    Mux16(a=regInput0, b=aluOut2, sel=selR2simd, out=regInput2);
+
+
     
     // The register to write into is indicated by a 3 bit wide flag. If the
     // current instruction writes into a register (regIsDest), then we write
@@ -211,8 +237,16 @@ CHIP CPU
             // 0b010 ==> R1
             // 0b001 ==> R2
     And(a=regIsDest, b=instruction[11], out=selR0);
-    And(a=regIsDest, b=instruction[10], out=selR1);
-    And(a=regIsDest, b=instruction[9],  out=selR2);
+    And(a=regIsDest, b=instruction[10], out=selR1og);
+    And(a=aluSimD, b=instruction[11], out=selR1simd);
+    Or(a=selR1og, b=selR1simd, out=selR1);
+    And(a=regIsDest, b=instruction[9], out=selR2og);
+    And(a=aluSimD, b=instruction[10], out=selR2simd);
+    Or(a=selR2og, b=selR2simd, out=selR2);
+
+
+
+
 
 // ALU Logic
     // For arithmetic instructions, our ALU has two different possible inputs
@@ -242,7 +276,4 @@ CHIP CPU
     Not(in=notAllZero, out=allZero);
     And(a=brEQ, b=allZero, out=pcLoada);
     Or(a=pcLoada, b=jmp, out=pcLoad);
-
-
-
 }

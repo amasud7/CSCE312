@@ -8,8 +8,7 @@ CHIP ALU {
     OUT AluOut[16], overflow;	
 
 	PARTS:
-
-
+	
 
 // adder
 	FullAdder(a=x[0], b=y[0], c=false, sum=AluOutAdd0, carry=carry0);
@@ -170,23 +169,27 @@ CHIP ALU {
 	Or(a=x[15], b=false, out=shiftRight14);
 	And(a=false, b=false, out=shiftRight15);
 
+
+	Not(in=Opcode[1], out=notOne);
+	And(a=notOne, b=Opcode[0], out=addAndSubOne);
+
 	// mux to select between add and subtract (change AluOut[] to smt else because we have to mux with other operations at the end)
-	Mux(a=AluOutAdd0, b=AluOutSub0, sel=Opcode[0], out=AluOutMath0);
-	Mux(a=AluOutAdd1, b=AluOutSub1, sel=Opcode[0], out=AluOutMath1);
-	Mux(a=AluOutAdd2, b=AluOutSub2, sel=Opcode[0], out=AluOutMath2);
-	Mux(a=AluOutAdd3, b=AluOutSub3, sel=Opcode[0], out=AluOutMath3);
-	Mux(a=AluOutAdd4, b=AluOutSub4, sel=Opcode[0], out=AluOutMath4);
-	Mux(a=AluOutAdd5, b=AluOutSub5, sel=Opcode[0], out=AluOutMath5);
-	Mux(a=AluOutAdd6, b=AluOutSub6, sel=Opcode[0], out=AluOutMath6);
-	Mux(a=AluOutAdd7, b=AluOutSub7, sel=Opcode[0], out=AluOutMath7);
-	Mux(a=AluOutAdd8, b=AluOutSub8, sel=Opcode[0], out=AluOutMath8);
-	Mux(a=AluOutAdd9, b=AluOutSub9, sel=Opcode[0], out=AluOutMath9);
-	Mux(a=AluOutAdd10, b=AluOutSub10, sel=Opcode[0], out=AluOutMath10);
-	Mux(a=AluOutAdd11, b=AluOutSub11, sel=Opcode[0], out=AluOutMath11);
-	Mux(a=AluOutAdd12, b=AluOutSub12, sel=Opcode[0], out=AluOutMath12);
-	Mux(a=AluOutAdd13, b=AluOutSub13, sel=Opcode[0], out=AluOutMath13);
-	Mux(a=AluOutAdd14, b=AluOutSub14, sel=Opcode[0], out=AluOutMath14);
-	Mux(a=AluOutAdd15, b=AluOutSub15, sel=Opcode[0], out=AluOutMath15);
+	Mux(a=AluOutAdd0, b=AluOutSub0, sel=addAndSubOne, out=AluOutMath0);
+	Mux(a=AluOutAdd1, b=AluOutSub1, sel=addAndSubOne, out=AluOutMath1);
+	Mux(a=AluOutAdd2, b=AluOutSub2, sel=addAndSubOne, out=AluOutMath2);
+	Mux(a=AluOutAdd3, b=AluOutSub3, sel=addAndSubOne, out=AluOutMath3);
+	Mux(a=AluOutAdd4, b=AluOutSub4, sel=addAndSubOne, out=AluOutMath4);
+	Mux(a=AluOutAdd5, b=AluOutSub5, sel=addAndSubOne, out=AluOutMath5);
+	Mux(a=AluOutAdd6, b=AluOutSub6, sel=addAndSubOne, out=AluOutMath6);
+	Mux(a=AluOutAdd7, b=AluOutSub7, sel=addAndSubOne, out=AluOutMath7);
+	Mux(a=AluOutAdd8, b=AluOutSub8, sel=addAndSubOne, out=AluOutMath8);
+	Mux(a=AluOutAdd9, b=AluOutSub9, sel=addAndSubOne, out=AluOutMath9);
+	Mux(a=AluOutAdd10, b=AluOutSub10, sel=addAndSubOne, out=AluOutMath10);
+	Mux(a=AluOutAdd11, b=AluOutSub11, sel=addAndSubOne, out=AluOutMath11);
+	Mux(a=AluOutAdd12, b=AluOutSub12, sel=addAndSubOne, out=AluOutMath12);
+	Mux(a=AluOutAdd13, b=AluOutSub13, sel=addAndSubOne, out=AluOutMath13);
+	Mux(a=AluOutAdd14, b=AluOutSub14, sel=addAndSubOne, out=AluOutMath14);
+	Mux(a=AluOutAdd15, b=AluOutSub15, sel=addAndSubOne, out=AluOutMath15);
 
 	// mux to select between nand and nor
 	Mux(a=nand0, b=nor0, sel=Opcode[0], out=AluOutLogic0);
@@ -280,12 +283,6 @@ CHIP ALU {
 	Mux(a=AluOutLogicAndMath13, b=AluOutS13, sel=Opcode[1], out=AluOut[13]);
 	Mux(a=AluOutLogicAndMath14, b=AluOutS14, sel=Opcode[1], out=AluOut[14]);
 	Mux(a=AluOutLogicAndMath15, b=AluOutS15, sel=Opcode[1], out=AluOut[15]);
-
-	
-
-
-
-
 
 
 }

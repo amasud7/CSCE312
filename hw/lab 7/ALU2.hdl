@@ -1,0 +1,276 @@
+CHIP ALU2 {
+    IN x[16], y[16], Opcode[4];
+    OUT AluOut[16], overflow;	
+
+	PARTS:
+
+    FullAdder(a=x[0], b=y[0], c=false, sum=AluOutAdd0, carry=carry0);
+	FullAdder(a=x[1], b=y[1], c=carry0 ,sum=AluOutAdd1 ,carry=carry1);
+	FullAdder(a=x[2], b=y[2], c=carry1 ,sum=AluOutAdd2 ,carry=carry2);
+	FullAdder(a=x[3], b=y[3], c=carry2 ,sum=AluOutAdd3 ,carry=carry3);
+	FullAdder(a=x[4], b=y[4], c=carry3 ,sum=AluOutAdd4 ,carry=carry4);
+	FullAdder(a=x[5], b=y[5], c=carry4 ,sum=AluOutAdd5 ,carry=carry5);
+	FullAdder(a=x[6], b=y[6], c=carry5 ,sum=AluOutAdd6 ,carry=carry6);
+	FullAdder(a=x[7], b=y[7], c=carry6 ,sum=AluOutAdd7 ,carry=carry7);
+	FullAdder(a=x[8], b=y[8], c=carry7 ,sum=AluOutAdd8 ,carry=carry8);
+	FullAdder(a=x[9], b=y[9], c=carry8 ,sum=AluOutAdd9 ,carry=carry9);
+	FullAdder(a=x[10], b=y[10], c=carry9 ,sum=AluOutAdd10 ,carry=carry10);
+	FullAdder(a=x[11], b=y[11], c=carry10 ,sum=AluOutAdd11 ,carry=carry11);
+	FullAdder(a=x[12], b=y[12], c=carry11 ,sum=AluOutAdd12 ,carry=carry12);
+	FullAdder(a=x[13], b=y[13], c=carry12 ,sum=AluOutAdd13 ,carry=carry13);
+	FullAdder(a=x[14], b=y[14], c=carry13 ,sum=AluOutAdd14 ,carry=carry14);
+	FullAdder(a=x[15], b=y[15], c=carry14 ,sum=AluOutAdd15 ,carry=overflow);
+
+	// implement subtract operation using 2s complement
+	// 1. invert y
+	// 2. add 1 to y
+	// 3. add x and y
+
+	Not(in=y[0], out=noty0);
+	Not(in=y[1], out=noty1);
+	Not(in=y[2], out=noty2);
+	Not(in=y[3], out=noty3);
+	Not(in=y[4], out=noty4);
+	Not(in=y[5], out=noty5);
+	Not(in=y[6], out=noty6);
+	Not(in=y[7], out=noty7);
+	Not(in=y[8], out=noty8);
+	Not(in=y[9], out=noty9);
+	Not(in=y[10], out=noty10);
+	Not(in=y[11], out=noty11);
+	Not(in=y[12], out=noty12);
+	Not(in=y[13], out=noty13);
+	Not(in=y[14], out=noty14);
+	Not(in=y[15], out=noty15);
+
+
+	// add 1 to y and add x+y
+	FullAdder(a=x[0], b=noty0, c=true, sum=AluOutSub0, carry=carrys0);
+	FullAdder(a=x[1], b=noty1, c=carrys0, sum=AluOutSub1, carry=carrys1);
+	FullAdder(a=x[2], b=noty2, c=carrys1, sum=AluOutSub2, carry=carrys2);
+	FullAdder(a=x[3], b=noty3, c=carrys2, sum=AluOutSub3, carry=carrys3);
+	FullAdder(a=x[4], b=noty4, c=carrys3, sum=AluOutSub4, carry=carrys4);
+	FullAdder(a=x[5], b=noty5, c=carrys4, sum=AluOutSub5, carry=carrys5);
+	FullAdder(a=x[6], b=noty6, c=carrys5, sum=AluOutSub6, carry=carrys6);
+	FullAdder(a=x[7], b=noty7, c=carrys6, sum=AluOutSub7, carry=carrys7);
+	FullAdder(a=x[8], b=noty8, c=carrys7, sum=AluOutSub8, carry=carrys8);
+	FullAdder(a=x[9], b=noty9, c=carrys8, sum=AluOutSub9, carry=carrys9);
+	FullAdder(a=x[10], b=noty10, c=carrys9, sum=AluOutSub10, carry=carrys10);
+	FullAdder(a=x[11], b=noty11, c=carrys10, sum=AluOutSub11, carry=carrys11);
+	FullAdder(a=x[12], b=noty12, c=carrys11, sum=AluOutSub12, carry=carrys12);
+	FullAdder(a=x[13], b=noty13, c=carrys12, sum=AluOutSub13, carry=carrys13);
+	FullAdder(a=x[14], b=noty14, c=carrys13, sum=AluOutSub14, carry=carrys14);
+	FullAdder(a=x[15], b=noty15, c=carrys14, sum=AluOutSub15, carry=overflows);
+
+
+	
+
+
+
+	// implement nand operation
+	Nand(a=x[0], b=y[0], out=nand0);
+	Nand(a=x[1], b=y[1], out=nand1);
+	Nand(a=x[2], b=y[2], out=nand2);
+	Nand(a=x[3], b=y[3], out=nand3);
+	Nand(a=x[4], b=y[4], out=nand4);
+	Nand(a=x[5], b=y[5], out=nand5);
+	Nand(a=x[6], b=y[6], out=nand6);
+	Nand(a=x[7], b=y[7], out=nand7);
+	Nand(a=x[8], b=y[8], out=nand8);
+	Nand(a=x[9], b=y[9], out=nand9);
+	Nand(a=x[10], b=y[10], out=nand10);
+	Nand(a=x[11], b=y[11], out=nand11);
+	Nand(a=x[12], b=y[12], out=nand12);
+	Nand(a=x[13], b=y[13], out=nand13);
+	Nand(a=x[14], b=y[14], out=nand14);
+	Nand(a=x[15], b=y[15], out=nand15);
+
+	// implement nor operation
+	Or(a=x[0], b=y[0], out=or0);
+	Or(a=x[1], b=y[1], out=or1);
+	Or(a=x[2], b=y[2], out=or2);
+	Or(a=x[3], b=y[3], out=or3);
+	Or(a=x[4], b=y[4], out=or4);
+	Or(a=x[5], b=y[5], out=or5);
+	Or(a=x[6], b=y[6], out=or6);
+	Or(a=x[7], b=y[7], out=or7);
+	Or(a=x[8], b=y[8], out=or8);
+	Or(a=x[9], b=y[9], out=or9);
+	Or(a=x[10], b=y[10], out=or10);
+	Or(a=x[11], b=y[11], out=or11);
+	Or(a=x[12], b=y[12], out=or12);
+	Or(a=x[13], b=y[13], out=or13);
+	Or(a=x[14], b=y[14], out=or14);
+	Or(a=x[15], b=y[15], out=or15);
+
+	Not(in=or0, out=nor0);
+	Not(in=or1, out=nor1);
+	Not(in=or2, out=nor2);
+	Not(in=or3, out=nor3);
+	Not(in=or4, out=nor4);
+	Not(in=or5, out=nor5);
+	Not(in=or6, out=nor6);
+	Not(in=or7, out=nor7);
+	Not(in=or8, out=nor8);
+	Not(in=or9, out=nor9);
+	Not(in=or10, out=nor10);
+	Not(in=or11, out=nor11);
+	Not(in=or12, out=nor12);
+	Not(in=or13, out=nor13);
+	Not(in=or14, out=nor14);
+	Not(in=or15, out=nor15);
+
+	
+
+
+
+	// implement shift left operation
+	And(a=false, b=false, out=shiftLeft0);
+	Or(a=x[0], b=false, out=shiftLeft1);
+	Or(a=x[1], b=false, out=shiftLeft2);
+	Or(a=x[2], b=false, out=shiftLeft3);
+	Or(a=x[3], b=false, out=shiftLeft4);
+	Or(a=x[4], b=false, out=shiftLeft5);
+	Or(a=x[5], b=false, out=shiftLeft6);
+	Or(a=x[6], b=false, out=shiftLeft7);
+	Or(a=x[7], b=false, out=shiftLeft8);
+	Or(a=x[8], b=false, out=shiftLeft9);
+	Or(a=x[9], b=false, out=shiftLeft10);
+	Or(a=x[10], b=false, out=shiftLeft11);
+	Or(a=x[11], b=false, out=shiftLeft12);
+	Or(a=x[12], b=false, out=shiftLeft13);
+	Or(a=x[13], b=false, out=shiftLeft14);
+	Or(a=x[14], b=false, out=shiftLeft15);
+
+
+	// implement shift right operation (not the same number)
+	Or(a=x[1], b=false, out=shiftRight0);
+	Or(a=x[2], b=false, out=shiftRight1);
+	Or(a=x[3], b=false, out=shiftRight2);
+	Or(a=x[4], b=false, out=shiftRight3);
+	Or(a=x[5], b=false, out=shiftRight4);
+	Or(a=x[6], b=false, out=shiftRight5);
+	Or(a=x[7], b=false, out=shiftRight6);
+	Or(a=x[8], b=false, out=shiftRight7);
+	Or(a=x[9], b=false, out=shiftRight8);
+	Or(a=x[10], b=false, out=shiftRight9);
+	Or(a=x[11], b=false, out=shiftRight10);
+	Or(a=x[12], b=false, out=shiftRight11);
+	Or(a=x[13], b=false, out=shiftRight12);
+	Or(a=x[14], b=false, out=shiftRight13);
+	Or(a=x[15], b=false, out=shiftRight14);
+	And(a=false, b=false, out=shiftRight15);
+
+	// mux to select between add and subtract (change AluOut[] to smt else because we have to mux with other operations at the end)
+	Mux(a=AluOutAdd0, b=AluOutSub0, sel=Opcode[0], out=AluOutMath0);
+	Mux(a=AluOutAdd1, b=AluOutSub1, sel=Opcode[0], out=AluOutMath1);
+	Mux(a=AluOutAdd2, b=AluOutSub2, sel=Opcode[0], out=AluOutMath2);
+	Mux(a=AluOutAdd3, b=AluOutSub3, sel=Opcode[0], out=AluOutMath3);
+	Mux(a=AluOutAdd4, b=AluOutSub4, sel=Opcode[0], out=AluOutMath4);
+	Mux(a=AluOutAdd5, b=AluOutSub5, sel=Opcode[0], out=AluOutMath5);
+	Mux(a=AluOutAdd6, b=AluOutSub6, sel=Opcode[0], out=AluOutMath6);
+	Mux(a=AluOutAdd7, b=AluOutSub7, sel=Opcode[0], out=AluOutMath7);
+	Mux(a=AluOutAdd8, b=AluOutSub8, sel=Opcode[0], out=AluOutMath8);
+	Mux(a=AluOutAdd9, b=AluOutSub9, sel=Opcode[0], out=AluOutMath9);
+	Mux(a=AluOutAdd10, b=AluOutSub10, sel=Opcode[0], out=AluOutMath10);
+	Mux(a=AluOutAdd11, b=AluOutSub11, sel=Opcode[0], out=AluOutMath11);
+	Mux(a=AluOutAdd12, b=AluOutSub12, sel=Opcode[0], out=AluOutMath12);
+	Mux(a=AluOutAdd13, b=AluOutSub13, sel=Opcode[0], out=AluOutMath13);
+	Mux(a=AluOutAdd14, b=AluOutSub14, sel=Opcode[0], out=AluOutMath14);
+	Mux(a=AluOutAdd15, b=AluOutSub15, sel=Opcode[0], out=AluOutMath15);
+
+	// mux to select between nand and nor
+	Mux(a=nand0, b=nor0, sel=Opcode[0], out=AluOutLogic0);
+	Mux(a=nand1, b=nor1, sel=Opcode[0], out=AluOutLogic1);
+	Mux(a=nand2, b=nor2, sel=Opcode[0], out=AluOutLogic2);
+	Mux(a=nand3, b=nor3, sel=Opcode[0], out=AluOutLogic3);
+	Mux(a=nand4, b=nor4, sel=Opcode[0], out=AluOutLogic4);
+	Mux(a=nand5, b=nor5, sel=Opcode[0], out=AluOutLogic5);
+	Mux(a=nand6, b=nor6, sel=Opcode[0], out=AluOutLogic6);
+	Mux(a=nand7, b=nor7, sel=Opcode[0], out=AluOutLogic7);
+	Mux(a=nand8, b=nor8, sel=Opcode[0], out=AluOutLogic8);
+	Mux(a=nand9, b=nor9, sel=Opcode[0], out=AluOutLogic9);
+	Mux(a=nand10, b=nor10, sel=Opcode[0], out=AluOutLogic10);
+	Mux(a=nand11, b=nor11, sel=Opcode[0], out=AluOutLogic11);
+	Mux(a=nand12, b=nor12, sel=Opcode[0], out=AluOutLogic12);
+	Mux(a=nand13, b=nor13, sel=Opcode[0], out=AluOutLogic13);
+	Mux(a=nand14, b=nor14, sel=Opcode[0], out=AluOutLogic14);
+	Mux(a=nand15, b=nor15, sel=Opcode[0], out=AluOutLogic15);
+
+	// mux to select between add/sub and nand/nor
+	Mux(a=AluOutMath0, b=AluOutLogic0, sel=Opcode[2], out=AluOutLogicAndMath0);
+	Mux(a=AluOutMath1, b=AluOutLogic1, sel=Opcode[2], out=AluOutLogicAndMath1);
+	Mux(a=AluOutMath2, b=AluOutLogic2, sel=Opcode[2], out=AluOutLogicAndMath2);
+	Mux(a=AluOutMath3, b=AluOutLogic3, sel=Opcode[2], out=AluOutLogicAndMath3);
+	Mux(a=AluOutMath4, b=AluOutLogic4, sel=Opcode[2], out=AluOutLogicAndMath4);
+	Mux(a=AluOutMath5, b=AluOutLogic5, sel=Opcode[2], out=AluOutLogicAndMath5);
+	Mux(a=AluOutMath6, b=AluOutLogic6, sel=Opcode[2], out=AluOutLogicAndMath6);
+	Mux(a=AluOutMath7, b=AluOutLogic7, sel=Opcode[2], out=AluOutLogicAndMath7);
+	Mux(a=AluOutMath8, b=AluOutLogic8, sel=Opcode[2], out=AluOutLogicAndMath8);
+	Mux(a=AluOutMath9, b=AluOutLogic9, sel=Opcode[2], out=AluOutLogicAndMath9);
+	Mux(a=AluOutMath10, b=AluOutLogic10, sel=Opcode[2], out=AluOutLogicAndMath10);
+	Mux(a=AluOutMath11, b=AluOutLogic11, sel=Opcode[2], out=AluOutLogicAndMath11);
+	Mux(a=AluOutMath12, b=AluOutLogic12, sel=Opcode[2], out=AluOutLogicAndMath12);
+	Mux(a=AluOutMath13, b=AluOutLogic13, sel=Opcode[2], out=AluOutLogicAndMath13);
+	Mux(a=AluOutMath14, b=AluOutLogic14, sel=Opcode[2], out=AluOutLogicAndMath14);
+	Mux(a=AluOutMath15, b=AluOutLogic15, sel=Opcode[2], out=AluOutLogicAndMath15);
+
+
+	// mux to select between shift left and shift right
+	Mux(a=shiftLeft0, b=shiftRight0, sel=Opcode[0], out=AluOutShift0);
+	Mux(a=shiftLeft1, b=shiftRight1, sel=Opcode[0], out=AluOutShift1);
+	Mux(a=shiftLeft2, b=shiftRight2, sel=Opcode[0], out=AluOutShift2);
+	Mux(a=shiftLeft3, b=shiftRight3, sel=Opcode[0], out=AluOutShift3);
+	Mux(a=shiftLeft4, b=shiftRight4, sel=Opcode[0], out=AluOutShift4);
+	Mux(a=shiftLeft5, b=shiftRight5, sel=Opcode[0], out=AluOutShift5);
+	Mux(a=shiftLeft6, b=shiftRight6, sel=Opcode[0], out=AluOutShift6);
+	Mux(a=shiftLeft7, b=shiftRight7, sel=Opcode[0], out=AluOutShift7);
+	Mux(a=shiftLeft8, b=shiftRight8, sel=Opcode[0], out=AluOutShift8);
+	Mux(a=shiftLeft9, b=shiftRight9, sel=Opcode[0], out=AluOutShift9);
+	Mux(a=shiftLeft10, b=shiftRight10, sel=Opcode[0], out=AluOutShift10);
+	Mux(a=shiftLeft11, b=shiftRight11, sel=Opcode[0], out=AluOutShift11);
+	Mux(a=shiftLeft12, b=shiftRight12, sel=Opcode[0], out=AluOutShift12);
+	Mux(a=shiftLeft13, b=shiftRight13, sel=Opcode[0], out=AluOutShift13);
+	Mux(a=shiftLeft14, b=shiftRight14, sel=Opcode[0], out=AluOutShift14);
+	Mux(a=shiftLeft15, b=shiftRight15, sel=Opcode[0], out=AluOutShift15);
+
+	// mux between add/sub and shift  left/right with bit 2
+	Mux(a=AluOutMath0, b=AluOutShift0, sel=Opcode[2], out=AluOutS0);
+	Mux(a=AluOutMath1, b=AluOutShift1, sel=Opcode[2], out=AluOutS1);
+	Mux(a=AluOutMath2, b=AluOutShift2, sel=Opcode[2], out=AluOutS2);
+	Mux(a=AluOutMath3, b=AluOutShift3, sel=Opcode[2], out=AluOutS3);
+	Mux(a=AluOutMath4, b=AluOutShift4, sel=Opcode[2], out=AluOutS4);
+	Mux(a=AluOutMath5, b=AluOutShift5, sel=Opcode[2], out=AluOutS5);
+	Mux(a=AluOutMath6, b=AluOutShift6, sel=Opcode[2], out=AluOutS6);
+	Mux(a=AluOutMath7, b=AluOutShift7, sel=Opcode[2], out=AluOutS7);
+	Mux(a=AluOutMath8, b=AluOutShift8, sel=Opcode[2], out=AluOutS8);
+	Mux(a=AluOutMath9, b=AluOutShift9, sel=Opcode[2], out=AluOutS9);
+	Mux(a=AluOutMath10, b=AluOutShift10, sel=Opcode[2], out=AluOutS10);
+	Mux(a=AluOutMath11, b=AluOutShift11, sel=Opcode[2], out=AluOutS11);
+	Mux(a=AluOutMath12, b=AluOutShift12, sel=Opcode[2], out=AluOutS12);
+	Mux(a=AluOutMath13, b=AluOutShift13, sel=Opcode[2], out=AluOutS13);
+	Mux(a=AluOutMath14, b=AluOutShift14, sel=Opcode[2], out=AluOutS14);
+	Mux(a=AluOutMath15, b=AluOutShift15, sel=Opcode[2], out=AluOutS15);
+
+
+
+	// shift and logical with bit 1
+	Mux(a=AluOutLogicAndMath0, b=AluOutS0, sel=Opcode[1], out=AluOut[0]);
+	Mux(a=AluOutLogicAndMath1, b=AluOutS1, sel=Opcode[1], out=AluOut[1]);
+	Mux(a=AluOutLogicAndMath2, b=AluOutS2, sel=Opcode[1], out=AluOut[2]);
+	Mux(a=AluOutLogicAndMath3, b=AluOutS3, sel=Opcode[1], out=AluOut[3]);
+	Mux(a=AluOutLogicAndMath4, b=AluOutS4, sel=Opcode[1], out=AluOut[4]);
+	Mux(a=AluOutLogicAndMath5, b=AluOutS5, sel=Opcode[1], out=AluOut[5]);
+	Mux(a=AluOutLogicAndMath6, b=AluOutS6, sel=Opcode[1], out=AluOut[6]);
+	Mux(a=AluOutLogicAndMath7, b=AluOutS7, sel=Opcode[1], out=AluOut[7]);
+	Mux(a=AluOutLogicAndMath8, b=AluOutS8, sel=Opcode[1], out=AluOut[8]);
+	Mux(a=AluOutLogicAndMath9, b=AluOutS9, sel=Opcode[1], out=AluOut[9]);
+	Mux(a=AluOutLogicAndMath10, b=AluOutS10, sel=Opcode[1], out=AluOut[10]);
+	Mux(a=AluOutLogicAndMath11, b=AluOutS11, sel=Opcode[1], out=AluOut[11]);
+	Mux(a=AluOutLogicAndMath12, b=AluOutS12, sel=Opcode[1], out=AluOut[12]);
+	Mux(a=AluOutLogicAndMath13, b=AluOutS13, sel=Opcode[1], out=AluOut[13]);
+	Mux(a=AluOutLogicAndMath14, b=AluOutS14, sel=Opcode[1], out=AluOut[14]);
+	Mux(a=AluOutLogicAndMath15, b=AluOutS15, sel=Opcode[1], out=AluOut[15]);
+
+	
+}
